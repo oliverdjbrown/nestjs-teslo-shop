@@ -7,10 +7,10 @@ async function bootstrap() {
   //INFO: setting to add prefix to endpoints
   app.setGlobalPrefix('api');
   //INFO: setting to enable api version
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '2',
-  });
+  //app.enableVersioning({
+  //  type: VersioningType.URI,
+  //  defaultVersion: '2',
+  //});
   //INFO: apply global pipes
   app.useGlobalPipes(
     new ValidationPipe({

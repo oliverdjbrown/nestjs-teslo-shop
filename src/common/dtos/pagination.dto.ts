@@ -5,6 +5,7 @@ import { IsOptional, IsPositive, Min } from 'class-validator';
 export class PaginationDTo {
   @IsOptional()
   @IsPositive()
+  //INFO: transform property type tu number
   @Type(() => Number)
   limit?: number;
   @IsOptional()  
