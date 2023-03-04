@@ -10,6 +10,7 @@ import { ProductImage } from './entities/product-image.entity';
   providers: [ProductsService],
   //INFO: Import TypeOrm Module with passing entities
   imports: [TypeOrmModule.forFeature([Product, ProductImage])],
+  //INFO: export module resources
   exports: [ProductsService, TypeOrmModule],
 })
 export class ProductsModule {}

@@ -21,8 +21,10 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    //INFO: inject another entity
     @InjectRepository(ProductImage)
     private readonly ProductImageRepository: Repository<ProductImage>,
+    //INFO: inject data source for transactional database operation
     private readonly dataSource: DataSource,
   ) {}
 
@@ -46,6 +48,7 @@ export class ProductsService {
     const { limit = 10, offset = 0 } = paginationDTo;
     try {
       const products = await this.productRepository.find({
+        //INFO: add paginations
         take: limit,
         skip: offset,
         //INFO: add table relations to results
@@ -96,9 +99,10 @@ export class ProductsService {
 
     if (!product) throw new NotFoundException(`Product with ${id} not found`);
 
-    //INFO: Transaction operation
+    //INFO: create a query for Transaction operation
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
+    //INFO: start database transaction changes
     await queryRunner.startTransaction();
 
     try {
@@ -114,7 +118,9 @@ export class ProductsService {
 
       //await this.productRepository.save(product);
 
+      //INFO: apply Database transactions
       await queryRunner.commitTransaction();
+      //INFO: release database connection
       await queryRunner.release();
 
       return product;

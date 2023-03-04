@@ -8,8 +8,10 @@ import {
 } from 'typeorm';
 import { ProductImage } from './product-image.entity';
 
+//INFO: Define Entity
 @Entity({ name: 'products' })
 export class Product {
+  //INFO: autogenerate uuid
   @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column('text', { unique: true })
@@ -45,25 +47,27 @@ export class Product {
   })
   tags: string[];
 
-  // images
+  //INFO: create relation  oneToMany
   @OneToMany(() => ProductImage, (productImage) => productImage.product, {
     cascade: true,
     eager: true,
   })
   images?: ProductImage[];
 
+  //INFO: Decorator to make actions before insert
   @BeforeInsert()
   checkSlugInsert() {
     if (!this.slug) {
       this.slug = this.title;
     }
-
+    
     this.slug = this.slug
-      .toLowerCase()
-      .replaceAll(' ', '_')
-      .replaceAll("'", '');
+    .toLowerCase()
+    .replaceAll(' ', '_')
+    .replaceAll("'", '');
   }
-
+  
+  //INFO: Decorator to make actions before update
   @BeforeUpdate()
   checkSlugUpdate() {
     this.slug = this.slug
