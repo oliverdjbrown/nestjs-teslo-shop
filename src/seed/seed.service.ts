@@ -5,6 +5,7 @@ import { initialData } from './data/seed-data';
 @Injectable()
 export class SeedService {
   constructor(private readonly productsService: ProductsService) {}
+  //INFO: run seed to populate database
   async runSeed() {
     await this.insertNewProducts();
     return 'seed executed';

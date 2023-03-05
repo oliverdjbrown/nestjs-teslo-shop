@@ -1,9 +1,10 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
   //INFO: setting to add prefix to endpoints
   app.setGlobalPrefix('api');
   //INFO: setting to enable api version
@@ -18,6 +19,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  await app.listen(3000);
+  //INFO: set app port dynamically
+  await app.listen(process.env.PORT);
+  logger.log(`App Running on port ${process.env.PORT}`);
 }
 bootstrap();
