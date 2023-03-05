@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationDTo } from 'src/common/dtos/pagination.dto';
 import { DataSource, Repository } from 'typeorm';
@@ -13,11 +7,10 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { validate as isUUID } from 'uuid';
 import { ProductImage } from './entities/product-image.entity';
+import { handlerDbExceptions } from 'src/common/helpers/handle-errors';
 
 @Injectable()
 export class ProductsService {
-  private readonly logger = new Logger('ProductsService');
-
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
@@ -40,7 +33,7 @@ export class ProductsService {
       await this.productRepository.save(product);
       return { ...product, images };
     } catch (error) {
-      this.handlerExceptions(error);
+      handlerDbExceptions(error);
     }
   }
 
@@ -61,7 +54,7 @@ export class ProductsService {
         images: product.images.map((img) => img.url),
       }));
     } catch (error) {
-      this.handlerExceptions(error);
+      handlerDbExceptions(error);
     }
   }
 
@@ -127,7 +120,7 @@ export class ProductsService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       await queryRunner.release();
-      this.handlerExceptions(error);
+      handlerDbExceptions(error);
     }
   }
 
@@ -137,7 +130,7 @@ export class ProductsService {
       await this.productRepository.remove(product);
       return { message: `The Product with id #${id} was deleted` };
     } catch (error) {
-      this.handlerExceptions(error);
+      handlerDbExceptions(error);
     }
   }
 
@@ -146,14 +139,7 @@ export class ProductsService {
     try {
       return await query.delete().where({}).execute();
     } catch (error) {
-      this.handlerExceptions(error);
+      handlerDbExceptions(error);
     }
-  }
-
-  private handlerExceptions(error) {
-    if (error.code === '23505') throw new BadRequestException(error.detail);
-    this.logger.error(error);
-    //INFO: set internal server exception
-    throw new InternalServerErrorException();
   }
 }
