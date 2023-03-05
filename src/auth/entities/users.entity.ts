@@ -8,7 +8,10 @@ export class User {
   @Column('text', { unique: true })
   email: string;
 
-  @Column('text')
+  @Column('text', {
+    //INFO: property to hide fields when retrieve information from database
+    select: false,
+  })
   password: string;
 
   @Column('text')
