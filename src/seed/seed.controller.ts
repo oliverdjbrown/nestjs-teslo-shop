@@ -1,8 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Auth } from '../auth/decorators';
 import { ValidRoles } from '../auth/enums/valid-roles.enum';
 import { SeedService } from './seed.service';
 
+@ApiTags('Seeds')
 @Controller('seed')
 export class SeedController {
   constructor(private readonly seedService: SeedService) {}
