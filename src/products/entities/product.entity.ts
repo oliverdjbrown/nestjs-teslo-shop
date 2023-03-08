@@ -1,8 +1,10 @@
+import { User } from '../../auth/entities/users.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -19,7 +21,7 @@ export class Product {
 
   @Column('float', { default: 0 })
   price: number;
-  
+
   @Column({ type: 'text', nullable: true })
   description: string;
 
@@ -54,19 +56,22 @@ export class Product {
   })
   images?: ProductImage[];
 
+  @ManyToOne(() => User, (user) => user.product, { eager: true })
+  user: User;
+
   //INFO: Decorator to make actions before insert
   @BeforeInsert()
   checkSlugInsert() {
     if (!this.slug) {
       this.slug = this.title;
     }
-    
+
     this.slug = this.slug
-    .toLowerCase()
-    .replaceAll(' ', '_')
-    .replaceAll("'", '');
+      .toLowerCase()
+      .replaceAll(' ', '_')
+      .replaceAll("'", '');
   }
-  
+
   //INFO: Decorator to make actions before update
   @BeforeUpdate()
   checkSlugUpdate() {

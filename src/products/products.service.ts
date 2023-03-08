@@ -7,6 +7,7 @@ import { Product } from './entities/product.entity';
 import { validate as isUUID } from 'uuid';
 import { ProductImage } from './entities/product-image.entity';
 import { handlerDbExceptions } from 'src/common/helpers/handle-errors';
+import { User } from '../auth/entities/users.entity';
 
 @Injectable()
 export class ProductsService {
@@ -20,7 +21,7 @@ export class ProductsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, user: User) {
     try {
       const { images = [], ...productDetails } = createProductDto;
       const product = this.productRepository.create({
@@ -28,6 +29,7 @@ export class ProductsService {
         images: images.map((image) =>
           this.ProductImageRepository.create({ url: image }),
         ),
+        user,
       });
       await this.productRepository.save(product);
       return { ...product, images };
@@ -80,7 +82,7 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
     const { images, ...data } = updateProductDto;
 
     const product = await this.productRepository.preload({
@@ -109,6 +111,7 @@ export class ProductsService {
       await queryRunner.manager.save(product);
 
       //await this.productRepository.save(product);
+      product.user = user;
 
       //INFO: apply Database transactions
       await queryRunner.commitTransaction();
